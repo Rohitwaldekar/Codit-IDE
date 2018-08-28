@@ -1,70 +1,52 @@
 package application;
-	
-import javafx.scene.control.Button;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import br.com.supremeforever.suprememdiwindow.MDICanvas;
-import br.com.supremeforever.suprememdiwindow.MDIWindow;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.fxml.FXMLLoader;
-
-
-import javafx.event.EventHandler;
-import javafx.scene.layout.StackPane;
-import javafx.application.Platform;
-
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class Main extends Application {
-	
-	int i =1; 
-	
-	public static void main(String[] args) {
+
+    @Override
+    public void start (Stage stage) {
+    	SplitPane root1 = new SplitPane();
+    	root1.setOrientation(Orientation.VERTICAL);
+
+//lower pane
+    	final AnchorPane paneFixed = new AnchorPane();
+    	paneFixed.getChildren().add(new Text("Lower pane"));
+
+    	SplitPane.setResizableWithParent(paneFixed, Boolean.FALSE);
+    	
+    	
+//upper pane
+    	SplitPane paneFree = new SplitPane();
+    	creacreateVerticlepane(paneFree);
+    	
+    	root1.getItems().addAll(paneFree, paneFixed);
+
+    	stage.setScene(new Scene(root1,1300,700));
+    	stage.show();
+        }
+    
+    public static void main(String[] args) {
 		launch(args);
 	}
-	
-	
-	@Override
-	public void start(Stage stage) {
-		
-			MDICanvas canvas = new MDICanvas(); 
-			canvas.setPrefSize(500,500);
-			
-			Button bt = new Button("New");
-			bt.setOnAction((ActionEvent event) -> {
-				try {
-					AnchorPane root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
-					MDIWindow mDIWindow = new MDIWindow("myId"+i,null, "my Window Title"+i,root);
-					canvas.addMDIWindow(mDIWindow);
-					i++;
-				} 
-				catch(IOException ex) {
-					Logger.getLogger(Main.class.getName()).log(Level.SEVERE,null,ex);
-				}
-				catch(Exception ex) {
-					Logger.getLogger(Main.class.getName()).log(Level.SEVERE,null,ex);
-				}
-			}
-			);
-			
-			VBox box = new VBox(canvas);
-			AnchorPane.setBottomAnchor(box, 0d);
-			AnchorPane.setTopAnchor(box, 0d);
-			AnchorPane.setLeftAnchor(box, 0d);
-			AnchorPane.setRightAnchor(box, 0d);
-			
-			AnchorPane pane = new AnchorPane(box);
-			Scene scene = new Scene(pane);
-			stage.setScene(scene);
-			stage.show();
-	}
+   
+    public void creacreateVerticlepane(SplitPane root2)
+    {
+    	root2.setOrientation(Orientation.HORIZONTAL);
+
+    	final AnchorPane paneFixed = new AnchorPane();
+    	paneFixed.getChildren().add(new Text("fixed"));
+
+    	SplitPane.setResizableWithParent(paneFixed, Boolean.FALSE);
+    	
+    	AnchorPane paneFree = new AnchorPane();
+    	
+    	root2.getItems().addAll(paneFree, paneFixed);
+    }
 }
