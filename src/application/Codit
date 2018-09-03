@@ -1,15 +1,24 @@
 package application;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebHistory;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 
@@ -18,22 +27,120 @@ public class Codit extends Application{
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("Codit IDE");
-        stage.setWidth(1300);
-        stage.setHeight(700);
+        //stage.setFullScreen(true);
 
-        //Setup left and Right
+        
+//Setup left and Right
         TabPaneWrapper wrapper = new TabPaneWrapper(Orientation.HORIZONTAL, .9);
-        TabPane centerPane = new TabPane();
-        centerPane.getTabs().addAll(generateTab("Tab 1"),generateTab("Tab 2"), generateTab("Tab 3"), generateTab("Tab N"));
+        
+        TabPane leftPane = new TabPane();
+        
+        Tab fileSystem = new Tab("File System");
+        fileSystem.setClosable(false);
+        
+        Tab variables = new Tab("Variables");
+        variables.setClosable(false);
+        
+        BorderPane content2 = new BorderPane();
+        TextArea text2 = new TextArea();
+        content2.setCenter(text2);
+        variables.setContent(content2);
+        
+        leftPane.getTabs().addAll(fileSystem,variables);
 
         TabPane rightPane = new TabPane();
         rightPane.getTabs().addAll(generateTab("Tab 1"),generateTab("Tab 2"), generateTab("Tab 3"), generateTab("Tab N"));
-        SplitPane.setResizableWithParent(rightPane, false);
-        wrapper.addNodes(centerPane, rightPane);
+        
+        //SplitPane.setResizableWithParent(rightPane, false);
+        
+        wrapper.addNodes(leftPane, rightPane);
 
-        //Add bottom
+//Add bottom
         TabPane bottomPane = new TabPane();
-        bottomPane.getTabs().addAll(generateTab("Tab 1"),generateTab("Tab 2"), generateTab("Tab 3"), generateTab("Tab N"));
+        Tab consol = new Tab("Consol");
+        consol.setClosable(false);
+        
+        BorderPane content1 = new BorderPane();
+        TextArea text1 = new TextArea();
+        content1.setCenter(text1);
+        consol.setContent(content1);
+        
+        Tab browser = new Tab("Browser");
+        browser.setClosable(false);
+        
+        new FXMLLoader();
+		BorderPane content3 = new BorderPane();
+		
+
+		ToolBar tool = new ToolBar();
+		Button b1 = new Button("Previous");
+		tool.getItems().add(b1);
+
+		Button b2 = new Button("Next");
+		tool.getItems().add(b2);
+
+		Button b3 = new Button("Go");
+		tool.getItems().add(b3);
+
+		TextField tf = new TextField();
+		tf.setPrefHeight(25.0);
+		tf.setPrefWidth(600.0);
+		
+		tool.getItems().add(tf);
+		
+		WebView webview = new WebView();
+		
+	//	WebEngine engine = new WebEngine();
+		WebEngine engine = webview.getEngine();
+		
+		String htLink = "http://";
+		
+		engine.load(htLink+"www.google.com");
+		
+		WebHistory history = engine.getHistory();
+		
+		b1.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent arg0) {
+				
+				history.go(-1);
+			}
+		});
+		
+		b3.setOnAction(new EventHandler<ActionEvent>() {
+		
+			@Override
+			public void handle(ActionEvent arg0) {
+				
+				String addLink = tf.getText().toString();
+				engine.load(htLink+addLink);
+			}
+		
+		});
+		
+		
+		b2.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent arg0) {
+				
+				history.go(1);
+			}
+		
+		});
+		
+		
+		content3.setCenter(webview);
+		content3.setTop(tool);
+		browser.setContent(content3);
+        
+		
+        //Tab variables = new Tab("Variables");
+        //variables.setClosable(false);
+
+        
+        bottomPane.getTabs().addAll(consol,browser);
         
         
         TabPaneWrapper wrapperBottom = new TabPaneWrapper(Orientation.VERTICAL, .7);
