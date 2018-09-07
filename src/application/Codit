@@ -3,12 +3,14 @@ package application;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -23,40 +25,52 @@ import javafx.stage.Stage;
 
 
 public class Codit extends Application{
-
     @Override
-    public void start(Stage stage) throws Exception {
-        stage.setTitle("Codit IDE");
-        //stage.setFullScreen(true);
+    public void start (Stage stage) {
+    	BorderPane outer = new BorderPane();
+    	
+    	MenuBar menuBar = new MenuBar();
+    	 
+        // --- Menu File
+        Menu menuFile = new Menu("File");
 
-        
-//Setup left and Right
-        TabPaneWrapper wrapper = new TabPaneWrapper(Orientation.HORIZONTAL, .9);
-        
-        TabPane leftPane = new TabPane();
-        
-        Tab fileSystem = new Tab("File System");
-        fileSystem.setClosable(false);
-        
-        Tab variables = new Tab("Variables");
-        variables.setClosable(false);
-        
-        BorderPane content2 = new BorderPane();
-        TextArea text2 = new TextArea();
-        content2.setCenter(text2);
-        variables.setContent(content2);
-        
-        leftPane.getTabs().addAll(fileSystem,variables);
+        MenuItem new1 = new MenuItem("New");
+        MenuItem open = new MenuItem("Open");
+        MenuItem save = new MenuItem("Save");
+        MenuItem saveAs = new MenuItem("Save As");
 
-        TabPane rightPane = new TabPane();
-        rightPane.getTabs().addAll(generateTab("Tab 1"),generateTab("Tab 2"), generateTab("Tab 3"), generateTab("Tab N"));
+        menuFile.getItems().addAll(new1,open,save,saveAs);
+ 
+        // --- Menu Edit
+        Menu menuEdit = new Menu("Edit");
         
-        //SplitPane.setResizableWithParent(rightPane, false);
-        
-        wrapper.addNodes(leftPane, rightPane);
+        MenuItem undo = new MenuItem("Undo");
+        MenuItem redo = new MenuItem("Redo");
+        MenuItem copy = new MenuItem("Copy");
+        MenuItem paste = new MenuItem("Paste");
+        MenuItem cute = new MenuItem("Cute");
+        MenuItem selectAll = new MenuItem("Select All");
 
-//Add bottom
-        TabPane bottomPane = new TabPane();
+        menuEdit.getItems().addAll(undo,redo,copy,paste,cute,selectAll);
+
+        // --- Menu View
+        Menu menuView = new Menu("View");
+ 
+        menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
+    	
+    	BorderPane inner = new BorderPane();
+    	
+    	ToolBar toolBar = new ToolBar();
+    	Button but = new Button("Click Me !");
+    	toolBar.getItems().add(but);
+    	inner.setTop(toolBar);
+    	
+    	SplitPane root1 = new SplitPane();
+    	root1.setOrientation(Orientation.VERTICAL);
+
+//lower pane
+
+    	TabPane bottomPane = new TabPane();
         Tab consol = new Tab("Consol");
         consol.setClosable(false);
         
@@ -68,9 +82,7 @@ public class Codit extends Application{
         Tab browser = new Tab("Browser");
         browser.setClosable(false);
         
-        new FXMLLoader();
-		BorderPane content3 = new BorderPane();
-		
+        BorderPane content3 = new BorderPane();
 
 		ToolBar tool = new ToolBar();
 		Button b1 = new Button("Previous");
@@ -90,7 +102,6 @@ public class Codit extends Application{
 		
 		WebView webview = new WebView();
 		
-	//	WebEngine engine = new WebEngine();
 		WebEngine engine = webview.getEngine();
 		
 		String htLink = "http://";
@@ -128,30 +139,31 @@ public class Codit extends Application{
 				history.go(1);
 			}
 		
-		});
-		
+		});		
 		
 		content3.setCenter(webview);
 		content3.setTop(tool);
 		browser.setContent(content3);
         
-		
-        //Tab variables = new Tab("Variables");
-        //variables.setClosable(false);
-
-        
         bottomPane.getTabs().addAll(consol,browser);
-        
-        
-        TabPaneWrapper wrapperBottom = new TabPaneWrapper(Orientation.VERTICAL, .7);
-        wrapperBottom.addNodes(wrapper.getNode(), bottomPane);
 
-        Scene myScene = new Scene(wrapperBottom.getNode(),1300,700);
-        stage.setScene(myScene);
-        stage.sizeToScene();
-        stage.show();
-    }
+    	SplitPane.setResizableWithParent(bottomPane, Boolean.FALSE);
+    	
+    	
+//upper pane
+    	SplitPane paneFree = new SplitPane();
+    	creacreateVerticlepane(paneFree);
+    	
+    	root1.getItems().addAll(paneFree, bottomPane);
 
+    	inner.setCenter(root1);
+    	
+    	outer.setTop(menuBar);
+    	outer.setCenter(inner);
+    	
+    	stage.setScene(new Scene(outer,1300,700));
+    	stage.show();
+        }
     public Tab generateTab(String name){
         Tab result = new Tab(name);
         BorderPane content = new BorderPane();
@@ -160,9 +172,34 @@ public class Codit extends Application{
         result.setContent(content);
         return result;
     }
+    
 
     public static void main(String[] args){
         Codit.launch(args);
+    }
+
+
+    public void creacreateVerticlepane(SplitPane root2)
+    {
+    	TabPane leftPane = new TabPane();
+        
+        Tab fileSystem = new Tab("File System");
+        fileSystem.setClosable(false);
+        
+        Tab variables = new Tab("Variables");
+        variables.setClosable(false);
+        
+        BorderPane content2 = new BorderPane();
+        TextArea text2 = new TextArea();
+        content2.setCenter(text2);
+        variables.setContent(content2);
+        
+        leftPane.getTabs().addAll(fileSystem,variables);
+
+        TabPane rightPane = new TabPane();
+        rightPane.getTabs().addAll(generateTab("Tab 1"),generateTab("Tab 2"), generateTab("Tab 3"), generateTab("Tab N"));
+
+    	root2.getItems().addAll(leftPane, rightPane);
     }
 
     public static class TabPaneWrapper{
