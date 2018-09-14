@@ -1,5 +1,7 @@
 package application;
 
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.io.File;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -21,6 +23,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
@@ -181,7 +184,10 @@ public class Codit extends Application{
         
             
 	        //Button c = new Button("Load Folder");
-	        
+        open.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
+     //   open.setMnemonic(KeyEvent.VK_F);
+
+	       // open.setAccelerator(Ctrl+C);
 	        open.setOnAction(new EventHandler<ActionEvent>() {
 	        	
 	            @Override 
@@ -213,7 +219,97 @@ public class Codit extends Application{
 	            }
 	        });
 	        
-	       // b.setCenter(fileTree);
+	        saveAs.setOnAction(new EventHandler<ActionEvent>() {
+	        	
+	            @Override 
+	            public void handle(ActionEvent e) {
+	            
+	            	//StringBuffer textBuffer = new StringBuffer();
+	              //  FileDialog fileDialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
+	          /*      String name = fileDialog.getFile();
+	                  fileDialog.setFilenameFilter(new FilenameFilter() {
+	                      public boolean accept(File dir, String name) {
+	                          return name.endsWith(".txt");
+	                      }
+	                  });
+	                  fileDialog.setFile("Untitled.txt");
+	                  fileDialog.setVisible(true);
+	                  System.out.println("File: " + fileDialog.getFile());
+	                  setTitle("JavaEdit: " +name);   // reset frame title
+	                  text.setText(textBuffer.toString());
+	             
+	        public void doSave() {
+	              FileDialog fileDialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
+	              String name = fileDialog.getFile();
+	              if(name == null)
+	              {
+	                  doSaveAs();
+	              }
+	              else{
+	                  System.out.println("File: " + fileDialog.getFile());
+	              }
+	             }
+	         
+	         */
+	            	/*StringBuffer textBuffer = new StringBuffer();
+	                FileDialog fileDialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
+	                String name = fileDialog.getFile();
+	                  fileDialog.setFilenameFilter(new FilenameFilter() {
+	                      public boolean accept(File dir, String name) {
+	                          return name.endsWith(".txt");
+	                      }
+	                  });
+	                  fileDialog.setFile("Untitled.txt");
+	                  fileDialog.setVisible(true);
+	                  System.out.println("File: " + fileDialog.getFile());
+	                  setTitle("JavaEdit: " +name);   // reset frame title
+	                  text.setText(textBuffer.toString());
+	             }
+	         private void doSave() {
+	              FileDialog fileDialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
+	              String name = fileDialog.getFile();
+	              if(name == null)
+	              {
+	                  doSaveAs();
+	              }
+	              else{
+	                  System.out.println("File: " + fileDialog.getFile());
+	              }
+	             }
+	         
+	            	//DirectoryChooser directoryChooser = new DirectoryChooser();
+	            	
+	            	//  int returnVal = directoryChooser.showSaveDialog();
+
+	               // directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+	                
+	               // File choice = directoryChooser.showDialog(stage);
+	                
+	                 /*   if(choice == null || ! choice.isDirectory()) {
+	                
+	                	Alert alert = new Alert(AlertType.ERROR);
+	                	
+	                    alert.setHeaderText("File Not Found.");
+	                    
+	                    alert.setContentText("Please Select file !");
+
+	                    alert.showAndWait();
+	                } 
+	                else {
+	    
+	                	TreeView<String> fileTree = new TreeView<String>(getNodesForDirectory(choice));
+	                	//fileTree.setRoot(getNodesForDirectory(choice));
+	        	        b.setCenter(fileTree);
+
+	                }*/
+	            }
+	        
+	        }
+	            );
+
+	        
+	        
+	        // b.setCenter(fileTree);
 
         
         
