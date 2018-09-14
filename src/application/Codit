@@ -1,12 +1,12 @@
 package application;
 
+import java.io.File;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -17,21 +17,35 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 
 public class Codit extends Application{
+	
+	private TabPane rightPane = new TabPane();
+	private TabPane leftPane = new TabPane();
+	private TabPane bottomPane = new TabPane();
+
+    public static Image rootIcon =new Image(ClassLoader.getSystemResourceAsStream("Folder.png"));
+
+	
     @Override
     public void start (Stage stage) {
     	BorderPane outer = new BorderPane();
     	
     	MenuBar menuBar = new MenuBar();
     	 
-        // --- Menu File
+// --- Menu File
         Menu menuFile = new Menu("File");
 
         MenuItem new1 = new MenuItem("New");
@@ -41,7 +55,7 @@ public class Codit extends Application{
 
         menuFile.getItems().addAll(new1,open,save,saveAs);
  
-        // --- Menu Edit
+// --- Menu Edit
         Menu menuEdit = new Menu("Edit");
         
         MenuItem undo = new MenuItem("Undo");
@@ -53,7 +67,7 @@ public class Codit extends Application{
 
         menuEdit.getItems().addAll(undo,redo,copy,paste,cute,selectAll);
 
-        // --- Menu View
+// --- Menu View
         Menu menuView = new Menu("View");
  
         menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
@@ -62,22 +76,29 @@ public class Codit extends Application{
     	
     	ToolBar toolBar = new ToolBar();
     	Button but = new Button("Click Me !");
+    	
+    	but.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent arg0) {
+			
+				rightPane.getTabs().addAll(generateTab("New Tab created by me !"));
+			}
+		});
     	toolBar.getItems().add(but);
     	inner.setTop(toolBar);
     	
     	SplitPane root1 = new SplitPane();
     	root1.setOrientation(Orientation.VERTICAL);
 
-//lower pane
-
-    	TabPane bottomPane = new TabPane();
-        Tab consol = new Tab("Consol");
-        consol.setClosable(false);
+//Console and Browser
+        Tab console = new Tab("Console");
+        console.setClosable(false);
         
         BorderPane content1 = new BorderPane();
         TextArea text1 = new TextArea();
         content1.setCenter(text1);
-        consol.setContent(content1);
+        console.setContent(content1);
         
         Tab browser = new Tab("Browser");
         browser.setClosable(false);
@@ -85,14 +106,14 @@ public class Codit extends Application{
         BorderPane content3 = new BorderPane();
 
 		ToolBar tool = new ToolBar();
-		Button b1 = new Button("Previous");
-		tool.getItems().add(b1);
+		Button previous = new Button("Previous");
+		tool.getItems().add(previous);
 
-		Button b2 = new Button("Next");
-		tool.getItems().add(b2);
+		Button next = new Button("Next");
+		tool.getItems().add(next);
 
-		Button b3 = new Button("Go");
-		tool.getItems().add(b3);
+		Button go = new Button("Go");
+		tool.getItems().add(go);
 
 		TextField tf = new TextField();
 		tf.setPrefHeight(25.0);
@@ -110,7 +131,7 @@ public class Codit extends Application{
 		
 		WebHistory history = engine.getHistory();
 		
-		b1.setOnAction(new EventHandler<ActionEvent>() {
+		previous.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -119,7 +140,7 @@ public class Codit extends Application{
 			}
 		});
 		
-		b3.setOnAction(new EventHandler<ActionEvent>() {
+		go.setOnAction(new EventHandler<ActionEvent>() {
 		
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -131,7 +152,7 @@ public class Codit extends Application{
 		});
 		
 		
-		b2.setOnAction(new EventHandler<ActionEvent>() {
+		next.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -145,47 +166,58 @@ public class Codit extends Application{
 		content3.setTop(tool);
 		browser.setContent(content3);
         
-        bottomPane.getTabs().addAll(consol,browser);
+        bottomPane.getTabs().addAll(console,browser);
 
-    	SplitPane.setResizableWithParent(bottomPane, Boolean.FALSE);
-    	
+    	SplitPane.setResizableWithParent(bottomPane, Boolean.FALSE);	
     	
 //upper pane
     	SplitPane paneFree = new SplitPane();
-    	creacreateVerticlepane(paneFree);
     	
-    	root1.getItems().addAll(paneFree, bottomPane);
-
-    	inner.setCenter(root1);
-    	
-    	outer.setTop(menuBar);
-    	outer.setCenter(inner);
-    	
-    	stage.setScene(new Scene(outer,1300,700));
-    	stage.show();
-        }
-    public Tab generateTab(String name){
-        Tab result = new Tab(name);
-        BorderPane content = new BorderPane();
-        TextArea text = new TextArea();
-        content.setCenter(text);
-        result.setContent(content);
-        return result;
-    }
-    
-
-    public static void main(String[] args){
-        Codit.launch(args);
-    }
-
-
-    public void creacreateVerticlepane(SplitPane root2)
-    {
-    	TabPane leftPane = new TabPane();
-        
+//File System        
         Tab fileSystem = new Tab("File System");
+        BorderPane b = new BorderPane();
+        fileSystem.setContent(b);
         fileSystem.setClosable(false);
         
+            
+	        //Button c = new Button("Load Folder");
+	        
+	        open.setOnAction(new EventHandler<ActionEvent>() {
+	        	
+	            @Override 
+	            public void handle(ActionEvent e) {
+	            
+	            	DirectoryChooser directoryChooser = new DirectoryChooser();
+	            	
+	                directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+	                
+	                File choice = directoryChooser.showDialog(stage);
+	                
+	                    if(choice == null || ! choice.isDirectory()) {
+	                
+	                	Alert alert = new Alert(AlertType.ERROR);
+	                	
+	                    alert.setHeaderText("File Not Found.");
+	                    
+	                    alert.setContentText("Please Select file !");
+
+	                    alert.showAndWait();
+	                } 
+	                else {
+	    
+	                	TreeView<String> fileTree = new TreeView<String>(getNodesForDirectory(choice));
+	                	//fileTree.setRoot(getNodesForDirectory(choice));
+	        	        b.setCenter(fileTree);
+
+	                }
+	            }
+	        });
+	        
+	       // b.setCenter(fileTree);
+
+        
+        
+//Variables
         Tab variables = new Tab("Variables");
         variables.setClosable(false);
         
@@ -196,33 +228,63 @@ public class Codit extends Application{
         
         leftPane.getTabs().addAll(fileSystem,variables);
 
-        TabPane rightPane = new TabPane();
         rightPane.getTabs().addAll(generateTab("Tab 1"),generateTab("Tab 2"), generateTab("Tab 3"), generateTab("Tab N"));
 
-    	root2.getItems().addAll(leftPane, rightPane);
+        rightPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+        
+    	paneFree.getItems().addAll(leftPane, rightPane);
+    
+    	
+    	root1.getItems().addAll(paneFree, bottomPane);
+
+    	inner.setCenter(root1);
+    	
+    	outer.setTop(menuBar);
+    	outer.setCenter(inner);
+    	stage.getIcons().add(new Image("Folder.png"));
+    	stage.setTitle("Codit IDE");
+    	stage.setScene(new Scene(outer,1300,700));
+    	stage.show();
+        }
+
+//New TextFeild Generator
+    public Tab generateTab(String name){
+        Tab result = new Tab(name);
+        
+        BorderPane content = new BorderPane();
+        TextArea text = new TextArea();
+        content.setCenter(text);
+        result.setContent(content);
+        return result;
+    }
+    /*
+    private boolean isDirectory;
+    public boolean isDirectory(){return(this.isDirectory);}
+    */
+    public TreeItem<String> getNodesForDirectory(File directory) { //Returns a TreeItem representation of the specified directory
+    	
+    	TreeItem<String> root = new TreeItem<String>(directory.getName());
+    /*	if(!root.isLeaf() && root.isExpanded())
+    	{
+            root.setGraphic(new ImageView(rootIcon));
+    	}
+    	*/
+    	for(File f : directory.listFiles()) {
+            System.out.println("Loading " + f.getName());
+            if(f.isDirectory()) { //Then we call the function recursively
+                root.setGraphic(new ImageView(rootIcon));
+                System.out.println("##Parent");
+                root.getChildren().add(getNodesForDirectory(f));
+            } else {
+                System.out.println("##Child");
+               // root.setGraphic(new ImageView(rootIcon));
+                root.getChildren().add(new TreeItem<String>(f.getName()));
+            }
+        }
+        return root;
     }
 
-    public static class TabPaneWrapper{
-        SplitPane split;
-
-        public TabPaneWrapper(Orientation o, double splitLocation){
-            split = new SplitPane();
-
-            //Change the CSS (uncomment if using an external css)
-            //split.getStylesheets().add("test.css");
-
-            split.setOrientation(o);
-            split.setDividerPosition(0, splitLocation);
-        }
-
-        public void addNodes(final Node node1, final Node node2){
-            //Add to the split pane
-            split.getItems().addAll(node1, node2);
-        }
-
-        public Parent getNode(){
-            return split;
-        }
+    public static void main(String[] args){
+        Codit.launch(args);
     }
-
 }
