@@ -1,386 +1,161 @@
 package application;
 
-import java.awt.FileDialog;
-import java.awt.Frame;
 import java.io.File;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToolBar;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebHistory;
-import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+public class Codit extends Application {
 
-public class Codit extends Application{
-	
-	private TabPane rightPane = new TabPane();
 	private TabPane leftPane = new TabPane();
 	private TabPane bottomPane = new TabPane();
+	private SplitPane paneFree = new SplitPane();
 
-    public static Image rootIcon =new Image(ClassLoader.getSystemResourceAsStream("Folder.png"));
-
+	final String IDLE_BUTTON_STYLE = "-fx-background-color: transparent;";
+	final String HOVERED_BUTTON_STYLE = "-fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;";
 	
-    @Override
-    public void start (Stage stage) {
-    	BorderPane outer = new BorderPane();
-    	
-    	MenuBar menuBar = new MenuBar();
-    	 
-// --- Menu File
-        Menu menuFile = new Menu("File");
+	//TreeView<String> fileTree;
+	
+	@Override
+	public void start(Stage stage) {
 
-        MenuItem new1 = new MenuItem("New");
-        MenuItem open = new MenuItem("Open");
-        MenuItem save = new MenuItem("Save");
-        MenuItem saveAs = new MenuItem("Save As");
+//Objects
+		BorderPane outer = new BorderPane();
 
-        menuFile.getItems().addAll(new1,open,save,saveAs);
- 
-// --- Menu Edit
-        Menu menuEdit = new Menu("Edit");
-        
-        MenuItem undo = new MenuItem("Undo");
-        MenuItem redo = new MenuItem("Redo");
-        MenuItem copy = new MenuItem("Copy");
-        MenuItem paste = new MenuItem("Paste");
-        MenuItem cute = new MenuItem("Cute");
-        MenuItem selectAll = new MenuItem("Select All");
+		BorderPane inner = new BorderPane();
 
-        menuEdit.getItems().addAll(undo,redo,copy,paste,cute,selectAll);
+		Editor editor = new Editor();
 
-// --- Menu View
-        Menu menuView = new Menu("View");
- 
-        menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
-    	
-    	BorderPane inner = new BorderPane();
-    	
-    	ToolBar toolBar = new ToolBar();
-    	Button but = new Button("Click Me !");
-    	
-    	but.setOnAction(new EventHandler<ActionEvent>() {
-			
+		CreateToolBar toolBar = new CreateToolBar();
+
+		FileSystem fileSystem = new FileSystem();
+
+		Variables variables = new Variables();
+		
+		CreateMenuBar menuBar = new CreateMenuBar();
+
+		Console console = new Console();
+		
+		Browser browser = new Browser();
+		
+//##Events handling	
+		Button newBut = toolBar.getNewBut();
+		
+//Create new Editor 		
+		newBut.setOnAction(new EventHandler<ActionEvent>() {
+
 			@Override
 			public void handle(ActionEvent arg0) {
-			
-				rightPane.getTabs().addAll(generateTab("New Tab created by me !"));
+				editor.setEditor("New TAb !");
 			}
 		});
-    	toolBar.getItems().add(but);
-    	inner.setTop(toolBar);
-    	
-    	SplitPane root1 = new SplitPane();
-    	root1.setOrientation(Orientation.VERTICAL);
 
-//Console and Browser
-        Tab console = new Tab("Console");
-        console.setClosable(false);
-        
-        BorderPane content1 = new BorderPane();
-        TextArea text1 = new TextArea();
-        content1.setCenter(text1);
-        console.setContent(content1);
-        
-        Tab browser = new Tab("Browser");
-        browser.setClosable(false);
-        
-        BorderPane content3 = new BorderPane();
+		newBut.setStyle(IDLE_BUTTON_STYLE);
+		newBut.setOnMouseEntered(e -> newBut.setStyle(HOVERED_BUTTON_STYLE));
+		newBut.setOnMouseExited(e -> newBut.setStyle(IDLE_BUTTON_STYLE));
 
-		ToolBar tool = new ToolBar();
-		Button previous = new Button("Previous");
-		tool.getItems().add(previous);
+//Open new file
+		MenuItem open = menuBar.getOpen();
 
-		Button next = new Button("Next");
-		tool.getItems().add(next);
-
-		Button go = new Button("Go");
-		tool.getItems().add(go);
-
-		TextField tf = new TextField();
-		tf.setPrefHeight(25.0);
-		tf.setPrefWidth(600.0);
-		
-		tool.getItems().add(tf);
-		
-		WebView webview = new WebView();
-		
-		WebEngine engine = webview.getEngine();
-		
-		String htLink = "http://";
-		
-		engine.load(htLink+"www.google.com");
-		
-		WebHistory history = engine.getHistory();
-		
-		previous.setOnAction(new EventHandler<ActionEvent>() {
-			
+		//BorderPane b = new BorderPane();
+						
+		open.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
-			public void handle(ActionEvent arg0) {
-				
-				history.go(-1);
+			public void handle(ActionEvent e) {
+
+				DirectoryChooser directoryChooser = new DirectoryChooser();
+
+				directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+				// Stage stage = new Stage();
+				File choice = directoryChooser.showDialog(stage);
+
+				if (choice == null || !choice.isDirectory()) {
+
+					Alert alert = new Alert(AlertType.ERROR);
+
+					alert.setHeaderText("File Not Found.");
+
+					alert.setContentText("Please Select file !");
+
+					alert.showAndWait();
+				} else {
+					
+					fileSystem.setFileSystem(choice);
+				}
 			}
 		});
+
+
+//Open file
+
 		
-		go.setOnAction(new EventHandler<ActionEvent>() {
-		
-			@Override
-			public void handle(ActionEvent arg0) {
-				
-				String addLink = tf.getText().toString();
-				engine.load(htLink+addLink);
-			}
-		
-		});
-		
-		
-		next.setOnAction(new EventHandler<ActionEvent>() {
+		/*TreeItem<String> tree = fileSystem.getFileTree();
+
+		tree.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {  
 			
-			@Override
-			public void handle(ActionEvent arg0) {
-				
-				history.go(1);
-			}
-		
-		});		
-		
-		content3.setCenter(webview);
-		content3.setTop(tool);
-		browser.setContent(content3);
-        
-        bottomPane.getTabs().addAll(console,browser);
+			if (event.getClickCount() == 2)  
+            {  
+            	System.out.println("Double Cliked Me !");                
+            }         
+		});  */
+		/*fileTree.setOnMouseClicked(new EventHandler<MouseEvent>()  
+        {  
+            @Override  
+            public void handle(MouseEvent mouseEvent)  
+            {  
+  
+                if (mouseEvent.getClickCount() == 2 && mouseEvent.getButton() == MouseButton.PRIMARY)  
+                {  
+                	System.out.println("Double Cliked Me !");                }  
+  
+            }  
+    });
+	*/
+	
+		inner.setTop(toolBar.getToolBar());
 
-    	SplitPane.setResizableWithParent(bottomPane, Boolean.FALSE);	
-    	
-//upper pane
-    	SplitPane paneFree = new SplitPane();
-    	
-//File System        
-        Tab fileSystem = new Tab("File System");
-        BorderPane b = new BorderPane();
-        fileSystem.setContent(b);
-        fileSystem.setClosable(false);
-        
-            
-	        //Button c = new Button("Load Folder");
-        open.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
-     //   open.setMnemonic(KeyEvent.VK_F);
+		SplitPane root = new SplitPane();
 
-	       // open.setAccelerator(Ctrl+C);
-	        open.setOnAction(new EventHandler<ActionEvent>() {
-	        	
-	            @Override 
-	            public void handle(ActionEvent e) {
-	            
-	            	DirectoryChooser directoryChooser = new DirectoryChooser();
-	            	
-	                directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-	                
-	                File choice = directoryChooser.showDialog(stage);
-	                
-	                    if(choice == null || ! choice.isDirectory()) {
-	                
-	                	Alert alert = new Alert(AlertType.ERROR);
-	                	
-	                    alert.setHeaderText("File Not Found.");
-	                    
-	                    alert.setContentText("Please Select file !");
+		root.setOrientation(Orientation.VERTICAL);
 
-	                    alert.showAndWait();
-	                } 
-	                else {
-	    
-	                	TreeView<String> fileTree = new TreeView<String>(getNodesForDirectory(choice));
-	                	//fileTree.setRoot(getNodesForDirectory(choice));
-	        	        b.setCenter(fileTree);
+		bottomPane.getTabs().addAll(console.getConsole(), browser.getBrowser());
 
-	                }
-	            }
-	        });
-	        
-	        saveAs.setOnAction(new EventHandler<ActionEvent>() {
-	        	
-	            @Override 
-	            public void handle(ActionEvent e) {
-	            
-	            	//StringBuffer textBuffer = new StringBuffer();
-	              //  FileDialog fileDialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
-	          /*      String name = fileDialog.getFile();
-	                  fileDialog.setFilenameFilter(new FilenameFilter() {
-	                      public boolean accept(File dir, String name) {
-	                          return name.endsWith(".txt");
-	                      }
-	                  });
-	                  fileDialog.setFile("Untitled.txt");
-	                  fileDialog.setVisible(true);
-	                  System.out.println("File: " + fileDialog.getFile());
-	                  setTitle("JavaEdit: " +name);   // reset frame title
-	                  text.setText(textBuffer.toString());
-	             
-	        public void doSave() {
-	              FileDialog fileDialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
-	              String name = fileDialog.getFile();
-	              if(name == null)
-	              {
-	                  doSaveAs();
-	              }
-	              else{
-	                  System.out.println("File: " + fileDialog.getFile());
-	              }
-	             }
-	         
-	         */
-	            	/*StringBuffer textBuffer = new StringBuffer();
-	                FileDialog fileDialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
-	                String name = fileDialog.getFile();
-	                  fileDialog.setFilenameFilter(new FilenameFilter() {
-	                      public boolean accept(File dir, String name) {
-	                          return name.endsWith(".txt");
-	                      }
-	                  });
-	                  fileDialog.setFile("Untitled.txt");
-	                  fileDialog.setVisible(true);
-	                  System.out.println("File: " + fileDialog.getFile());
-	                  setTitle("JavaEdit: " +name);   // reset frame title
-	                  text.setText(textBuffer.toString());
-	             }
-	         private void doSave() {
-	              FileDialog fileDialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
-	              String name = fileDialog.getFile();
-	              if(name == null)
-	              {
-	                  doSaveAs();
-	              }
-	              else{
-	                  System.out.println("File: " + fileDialog.getFile());
-	              }
-	             }
-	         
-	            	//DirectoryChooser directoryChooser = new DirectoryChooser();
-	            	
-	            	//  int returnVal = directoryChooser.showSaveDialog();
+		SplitPane.setResizableWithParent(bottomPane, Boolean.FALSE);
 
-	               // directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-	                
-	               // File choice = directoryChooser.showDialog(stage);
-	                
-	                 /*   if(choice == null || ! choice.isDirectory()) {
-	                
-	                	Alert alert = new Alert(AlertType.ERROR);
-	                	
-	                    alert.setHeaderText("File Not Found.");
-	                    
-	                    alert.setContentText("Please Select file !");
+		leftPane.getTabs().addAll(fileSystem.getFileSystem(), variables.getVariables());
 
-	                    alert.showAndWait();
-	                } 
-	                else {
-	    
-	                	TreeView<String> fileTree = new TreeView<String>(getNodesForDirectory(choice));
-	                	//fileTree.setRoot(getNodesForDirectory(choice));
-	        	        b.setCenter(fileTree);
+		paneFree.getItems().addAll(leftPane, editor.getEditor());
 
-	                }*/
-	            }
-	        
-	        }
-	            );
+		root.getItems().addAll(paneFree, bottomPane);
 
-	        
-	        
-	        // b.setCenter(fileTree);
+		inner.setCenter(root);
 
-        
-        
-//Variables
-        Tab variables = new Tab("Variables");
-        variables.setClosable(false);
-        
-        BorderPane content2 = new BorderPane();
-        TextArea text2 = new TextArea();
-        content2.setCenter(text2);
-        variables.setContent(content2);
-        
-        leftPane.getTabs().addAll(fileSystem,variables);
+		outer.setTop(menuBar.getMenuBar());
 
-        rightPane.getTabs().addAll(generateTab("Tab 1"),generateTab("Tab 2"), generateTab("Tab 3"), generateTab("Tab N"));
+		outer.setCenter(inner);
 
-        rightPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
-        
-    	paneFree.getItems().addAll(leftPane, rightPane);
-    
-    	
-    	root1.getItems().addAll(paneFree, bottomPane);
+		stage.getIcons().add(new Image("folder-open.png"));
+		stage.setTitle("Codit IDE");
+		stage.setScene(new Scene(outer, 1300, 700));
+		stage.show();
+	}
 
-    	inner.setCenter(root1);
-    	
-    	outer.setTop(menuBar);
-    	outer.setCenter(inner);
-    	stage.getIcons().add(new Image("Folder.png"));
-    	stage.setTitle("Codit IDE");
-    	stage.setScene(new Scene(outer,1300,700));
-    	stage.show();
-        }
-
-//New TextFeild Generator
-    public Tab generateTab(String name){
-        Tab result = new Tab(name);
-        
-        BorderPane content = new BorderPane();
-        TextArea text = new TextArea();
-        content.setCenter(text);
-        result.setContent(content);
-        return result;
-    }
-    /*
-    private boolean isDirectory;
-    public boolean isDirectory(){return(this.isDirectory);}
-    */
-    public TreeItem<String> getNodesForDirectory(File directory) { //Returns a TreeItem representation of the specified directory
-    	
-    	TreeItem<String> root = new TreeItem<String>(directory.getName());
-    /*	if(!root.isLeaf() && root.isExpanded())
-    	{
-            root.setGraphic(new ImageView(rootIcon));
-    	}
-    	*/
-    	for(File f : directory.listFiles()) {
-            System.out.println("Loading " + f.getName());
-            if(f.isDirectory()) { //Then we call the function recursively
-                root.setGraphic(new ImageView(rootIcon));
-                System.out.println("##Parent");
-                root.getChildren().add(getNodesForDirectory(f));
-            } else {
-                System.out.println("##Child");
-               // root.setGraphic(new ImageView(rootIcon));
-                root.getChildren().add(new TreeItem<String>(f.getName()));
-            }
-        }
-        return root;
-    }
-
-    public static void main(String[] args){
-        Codit.launch(args);
-    }
+	public static void main(String[] args) {
+		Codit.launch(args);
+	}
+	
 }
