@@ -8,9 +8,13 @@ public class Variables {
 
 	private Tab variables;
 	
+	final String WHITE = "-fx-background-color: #FFFFFF";
+	
 	public Variables() {
 
 		variables = new Tab("Variables");
+		variables.setStyle(WHITE);
+
 	}
 	public Tab getVariables() {
 
