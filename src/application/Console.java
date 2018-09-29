@@ -8,9 +8,13 @@ public class Console {
 
 	private Tab console;
 	
+	final String WHITE = "-fx-background-color: #FFFFFF";
+	
 	public Console() {
 		
 		console = new Tab("Console");
+		console.setStyle(WHITE);
+
 	}
 	
 	public Tab getConsole() {
