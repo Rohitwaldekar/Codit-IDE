@@ -22,14 +22,34 @@ public class Browser {
 	private TextField tf;
 	private WebView webview;
 	
+	final String IDLE_BUTTON_STYLE = "-fx-background-color: transparent; ";
+	final String HOVERED_BUTTON_STYLE = "-fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;";
+	final String WHITE = "-fx-background-color: #FFFFFF";
+	
 	public Browser() {
 
 		browser = new Tab("Browser");
+		browser.setStyle(WHITE);
+
 		content = new BorderPane();
 		tool = new ToolBar();
+		tool.setStyle(WHITE);
+		
 		previous = new Button("Previous");
+		previous.setStyle(IDLE_BUTTON_STYLE);
+		previous.setOnMouseEntered(e -> previous.setStyle(HOVERED_BUTTON_STYLE));
+		previous.setOnMouseExited(e -> previous.setStyle(IDLE_BUTTON_STYLE));
+		
 		next = new Button("Next");
+		next.setStyle(IDLE_BUTTON_STYLE);
+		next.setOnMouseEntered(e -> next.setStyle(HOVERED_BUTTON_STYLE));
+		next.setOnMouseExited(e -> next.setStyle(IDLE_BUTTON_STYLE));
+		
 		go = new Button("Go");
+		go.setStyle(IDLE_BUTTON_STYLE);
+		go.setOnMouseEntered(e -> go.setStyle(HOVERED_BUTTON_STYLE));
+		go.setOnMouseExited(e -> go.setStyle(IDLE_BUTTON_STYLE));
+		
 		tf = new TextField();
 		webview = new WebView();
 	}
