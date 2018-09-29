@@ -27,6 +27,8 @@ public class CreateMenuBar {
 	private Menu menuEdit;
 	private Menu menuView;
 	
+	final String WHITE = "-fx-background-color: #FFFFFF";
+	
 	public CreateMenuBar() {
 
 		// --- Menu File
@@ -44,6 +46,8 @@ public class CreateMenuBar {
 		selectAll = new MenuItem("Select All");
 
 		menuBar = new MenuBar();
+		menuBar.setStyle(WHITE);
+
 //
 		menuFile = new Menu("File");
 
