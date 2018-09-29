@@ -24,37 +24,57 @@ public class Codit extends Application {
 	private TabPane bottomPane = new TabPane();
 	private SplitPane paneFree = new SplitPane();
 
-	final String IDLE_BUTTON_STYLE = "-fx-background-color: transparent;";
-	final String HOVERED_BUTTON_STYLE = "-fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;";
+	final String WHITE = "-fx-background-color: #FFFFFF";
 	
-	//TreeView<String> fileTree;
+	private BorderPane outer;
+
+	private BorderPane inner;
+
+	private Editor editor;
+
+	private CreateToolBar toolBar;
+
+	private FileSystem fileSystem;
+
+	private Variables variables;
+	
+	private CreateMenuBar menuBar;
+
+	private Console console;
+	
+	private Browser browser;
+	
+
+	public Codit() {
+
+		outer = new BorderPane();
+		outer.setStyle(WHITE);
+
+		inner = new BorderPane();
+		inner.setStyle(WHITE);
+		
+		editor = new Editor();
+
+		toolBar = new CreateToolBar();
+		
+		fileSystem = new FileSystem();
+
+		variables = new Variables();
+
+		menuBar = new CreateMenuBar();
+
+		console = new Console();
+
+		browser = new Browser();
+	}
+	
 	
 	@Override
 	public void start(Stage stage) {
-
-//Objects
-		BorderPane outer = new BorderPane();
-
-		BorderPane inner = new BorderPane();
-
-		Editor editor = new Editor();
-
-		CreateToolBar toolBar = new CreateToolBar();
-
-		FileSystem fileSystem = new FileSystem();
-
-		Variables variables = new Variables();
-		
-		CreateMenuBar menuBar = new CreateMenuBar();
-
-		Console console = new Console();
-		
-		Browser browser = new Browser();
-		
 //##Events handling	
-		Button newBut = toolBar.getNewBut();
 		
 //Create new Editor 		
+		Button newBut = toolBar.getNewBut();
 		newBut.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -63,15 +83,13 @@ public class Codit extends Application {
 			}
 		});
 
-		newBut.setStyle(IDLE_BUTTON_STYLE);
-		newBut.setOnMouseEntered(e -> newBut.setStyle(HOVERED_BUTTON_STYLE));
-		newBut.setOnMouseExited(e -> newBut.setStyle(IDLE_BUTTON_STYLE));
-
+		
 //Open new file
 		MenuItem open = menuBar.getOpen();
 
 		//BorderPane b = new BorderPane();
 						
+		
 		open.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -94,38 +112,16 @@ public class Codit extends Application {
 					alert.showAndWait();
 				} else {
 					
-					fileSystem.setFileSystem(choice);
+					editor = fileSystem.setFileSystem(choice,editor);
 				}
 			}
 		});
 
 
 //Open file
-
+ 
+		//editor = fileSystem.mouseClickEvent(editor);
 		
-		/*TreeItem<String> tree = fileSystem.getFileTree();
-
-		tree.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {  
-			
-			if (event.getClickCount() == 2)  
-            {  
-            	System.out.println("Double Cliked Me !");                
-            }         
-		});  */
-		/*fileTree.setOnMouseClicked(new EventHandler<MouseEvent>()  
-        {  
-            @Override  
-            public void handle(MouseEvent mouseEvent)  
-            {  
-  
-                if (mouseEvent.getClickCount() == 2 && mouseEvent.getButton() == MouseButton.PRIMARY)  
-                {  
-                	System.out.println("Double Cliked Me !");                }  
-  
-            }  
-    });
-	*/
-	
 		inner.setTop(toolBar.getToolBar());
 
 		SplitPane root = new SplitPane();
